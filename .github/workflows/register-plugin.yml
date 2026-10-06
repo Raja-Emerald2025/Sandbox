@@ -1,0 +1,29 @@
+name: Register plugin to GoodData workspace
+
+on:
+  workflow_dispatch:
+    inputs:
+      plugin_url:
+        description: "Full HTTPS URL to the plugin .mjs file deployed by GitHub Pages"
+        required: true
+
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: top20_products_gallery
+    env:
+      TIGER_API_TOKEN: ${{ secrets.TIGER_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Register plugin in workspace
+        run: npm run add-plugin -- "${{ github.event.inputs.plugin_url }}"
